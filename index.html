@@ -7,5 +7,229 @@
 </head>
 <body>
     
+    <h1 onClick="changeColor()">Prime Numbers Finder</h1>
+
+    <p id="message">PCの性能によっては、10000000（1千万）以上の上限値を設定すると、非常に長い時間がかかる場合があります。</p>
+
+    <form class="form" id="form1">
+        <label for="maxN">上限値</label>
+        <input type="number" id="maxNumber" name="maxN" onkeyup="keyCode(event)">
+        <button type="submit" onclick="primeNumberFinder()" id="submit">Submit</button>
+        <button type="reset" onclick="clearText()">Clear</button>
+    </form>
+
+    <h1 id="numberDisplay"></h1>
+
+    <div>
+        <p class="caption">プライムナンバーの個数</p>
+        <h1 id="count"></h1>
+        <p class="caption">計算時間（milli-second）</p>
+        <h4 id="elapse"></h4>
+        <h4 id="elapse2" style="color:gray"></h4>
+        <p class="caption">プライムナンバー</p>
+        <div class="primeNumbers">
+            <p id="showPrimeNumbers"></p>
+        </div>
+    </div>   
+
+    <script>
+
+    function keyCode (event) {
+        if (event.code === "Delete"){
+            clearText();
+        } else if (event.code === "Space"){
+            clearText();
+        }
+        const str = document.getElementById('maxNumber').value;
+        const numbered = Number(str);
+        const formatted = numbered.toLocaleString('en-US');
+        document.getElementById('numberDisplay').innerHTML = formatted;
+        const strArray = str.split('');
+        
+        if (Number(str)>0 && strArray.length >= 9) {
+            document.getElementById('numberDisplay').style.backgroundColor = "red";
+            document.getElementById('numberDisplay').style.color = "white";
+        } else if (Number(str)>0 && strArray.length >= 8) {
+            document.getElementById('numberDisplay').style.backgroundColor = "magenta";
+            document.getElementById('numberDisplay').style.color = "white";
+        } else if (Number(str)>0 && strArray.length >= 7) {
+            document.getElementById('numberDisplay').style.backgroundColor = "yellow";
+            document.getElementById('numberDisplay').style.color = "black";
+        } else {
+            document.getElementById('numberDisplay').style.backgroundColor = "white";
+            document.getElementById('numberDisplay').style.color = "black";
+        }
+    }
+
+    let primeNumbersArray = [];
+    let start = 0;
+
+    function isPrimeNumber (integer) {
+
+        //2より小さい数は全てfalseを返す
+        if (integer < 2) return false;
+
+        //100より小さい、かつ100以下のプライムナンバーに合致する数について、trueを返す
+        const smallPrimeNumbers = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97];
+        if (integer < 100 && smallPrimeNumbers.includes(integer)) return true;
+
+        //上記の2パターンの選別方法に合致しない場合は、2以上のプライムナンバーで割り算して、余りを見る
+        if ( integer % 2 === 0 ) {
+            return false;
+        } else if ( integer % 3 === 0 ){
+            return false;
+        } else if ( integer % 5 === 0 ){
+            return false;
+        } else if ( integer % 7 === 0 ){
+            return false;
+        } else if ( integer % 11 === 0 ){
+            return false;
+        } else if ( integer % 13 === 0 ){
+            return false;
+        } else if ( integer % 17 === 0 ){
+            return false;
+        } else if ( integer % 19 === 0 ){
+            return false;
+        } else if ( integer % 23 === 0 ){
+            return false;
+        } else if ( integer % 29 === 0 ){
+            return false;
+        } else if ( integer % 31 === 0 ){
+            return false;
+        } else if ( integer % 37 === 0 ){
+            return false;
+        } else if ( integer % 41 === 0 ){
+            return false;
+        } else if ( integer % 43 === 0 ){
+            return false;
+        } else if ( integer % 47 === 0 ){
+            return false;
+        } else if ( integer % 53 === 0 ){
+            return false;
+        } else if ( integer % 59 === 0 ){
+            return false;
+        } else if ( integer % 61 === 0 ){
+            return false;
+        } else if ( integer % 67 === 0 ){
+            return false;
+        } else if ( integer % 71 === 0 ){
+            return false;
+        } else if ( integer % 73 === 0 ){
+            return false;
+        } else if ( integer % 79 === 0 ){
+            return false;
+        } else if ( integer % 83 === 0 ){
+            return false;
+        } else if ( integer % 89 === 0 ){
+            return false;
+        } else if ( integer % 97 === 0 ){
+            return false;
+        } else {
+            for (let i = 24, s = Math.sqrt(integer); primeNumbersArray[i] <= s; i++) {
+                if (integer % primeNumbersArray[i] === 0) return false;
+            }
+        }
+
+        return true;
+    }
+
+    function primeNumberFinder () {
+
+        primeNumbersArray = [];
+        const limitString = document.getElementById('maxNumber').value;
+        const limit = Number(limitString);
+
+        if ( limit >= 10**9 ) {
+            if (confirm("20分以上かかる可能性がありますが、よろしいですか？")){
+                start = performance.now();
+                console.time();
+                loopFinder();
+            } else {
+                clearText();
+            }
+        } else if ( limit >= 10**8 ) {
+            if (confirm("30秒以上かかる可能性がありますが、よろしいですか？")){
+                start = performance.now();
+                console.time();
+                loopFinder();
+            } else {
+                clearText();
+            }
+        } else {
+            start = performance.now();
+            console.time();
+            loopFinder();
+        }
+
+        function loopFinder() {
+            for (let i = 2; i <= limit; i++) {
+                if (isPrimeNumber(i) === true) {
+                    primeNumbersArray.push(i);
+                }
+            }
+        }
+
+        writer();
+    }
+
+    function writer () {
+        event.preventDefault();
+        console.timeEnd();
+        const end = performance.now();
+        const subtraction = end - start;
+        const subtraction2 = millisToMinutesAndSeconds(subtraction);
+        subtraction > 1000 ? document.getElementById("elapse2").style.display = "block" : null;
+
+        document.getElementsByClassName("caption")[0].style.display = "block";
+        document.getElementsByClassName("caption")[1].style.display = "block";
+        document.getElementsByClassName("caption")[2].style.display = "block";
+        document.getElementById("count").innerText = primeNumbersArray.length;
+        const primeNumbers = primeNumbersArray.join();
+        const spaced = primeNumbers.replaceAll(',', ', ');
+        document.getElementById("showPrimeNumbers").innerHTML = spaced;
+        document.getElementById("elapse").innerText = subtraction;
+        document.getElementById("elapse2").innerText = subtraction2;
+    }
+
+    function millisToMinutesAndSeconds(millis) {
+        const hours = Math.floor(millis / 3600000); 
+        const minutes = Math.floor((millis % 3600000) / 60000);
+        const seconds = Math.floor((millis % 60000) / 1000);
+        const milliSeconds = Math.floor(millis % 1000);
+        return hours + "時間" + minutes + "分" + (seconds < 10 ? '0' : '') + seconds + "秒" + milliSeconds + "ミリ秒";
+    }
+
+    function clearText () {
+        event.preventDefault();
+        primeNumbersArray = [];
+        start = 0;
+        document.getElementById("maxNumber").value = "";
+        document.getElementById("numberDisplay").innerHTML = "";
+        document.getElementById("count").innerHTML = "";
+        document.getElementById("showPrimeNumbers").innerHTML = "";
+        document.getElementById("elapse").innerHTML = "";
+        document.getElementById("elapse2").innerHTML = "";
+        document.getElementById("elapse2").style.display = "none";
+        document.getElementsByClassName("caption")[0].style.display = "none";
+        document.getElementsByClassName("caption")[1].style.display = "none";
+        document.getElementsByClassName("caption")[2].style.display = "none";
+        document.getElementById('maxNumber').style.backgroundColor = "white";
+        document.getElementById('maxNumber').style.color = "black";
+        document.getElementById("maxNumber").focus();
+        console.clear();
+    }
+
+    function changeColor () {
+        let className = document.getElementById("bodyStyle").className;
+        console.log(className)
+        if (className === "normal") {
+            document.getElementById("bodyStyle").className = "dark"
+        } else {
+            document.getElementById("bodyStyle").className = "normal";
+        }
+    }
+
+    </script>
+    
 </body>
 </html>
